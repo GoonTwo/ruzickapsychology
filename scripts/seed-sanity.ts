@@ -162,6 +162,7 @@ async function buildDocuments(): Promise<SeedDocument[]> {
       hours: site.hours,
       portalUrl: site.portalUrl,
       availabilityStatus: site.availabilityStatus,
+      availabilityBadgeMessages: site.availabilityBadgeMessages,
       availabilityMessaging: site.availabilityMessaging,
       url: site.url,
       tagline: site.tagline,

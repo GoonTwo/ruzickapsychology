@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  getAvailabilityBadgeMessages,
   getAvailabilityStateCopy,
+  initialAvailabilityBadgeMessages,
   initialAvailabilityMessaging,
   normalizeAvailabilityStatus,
 } from "./availability";
@@ -39,5 +41,21 @@ describe("availability helpers", () => {
 
   it("returns null when alternate-state copy is missing from Sanity", () => {
     expect(getAvailabilityStateCopy("waitlist", null)).toBeNull();
+  });
+
+  it("selects the matching Sanity-owned badge message set", () => {
+    expect(
+      getAvailabilityBadgeMessages(
+        "waitlist",
+        initialAvailabilityBadgeMessages,
+      ),
+    ).toEqual(["JOIN THE WAITLIST", "EMAIL FOR AVAILABILITY"]);
+    expect(
+      getAvailabilityBadgeMessages("closed", initialAvailabilityBadgeMessages),
+    ).toEqual(["PRACTICE CURRENTLY FULL", "PLEASE CHECK BACK SOON"]);
+  });
+
+  it("returns null when badge messages are missing from Sanity", () => {
+    expect(getAvailabilityBadgeMessages("waitlist", null)).toBeNull();
   });
 });

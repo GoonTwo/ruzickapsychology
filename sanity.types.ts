@@ -283,6 +283,20 @@ export type SiteSettings = {
   hours: Array<string>;
   portalUrl: string;
   availabilityStatus?: "accepting" | "waitlist" | "closed";
+  availabilityBadgeMessages: {
+    accepting: {
+      line1: string;
+      line2: string;
+    };
+    waitlist: {
+      line1: string;
+      line2: string;
+    };
+    closed: {
+      line1: string;
+      line2: string;
+    };
+  };
   availabilityMessaging: {
     waitlist: {
       heroCta: string;
@@ -516,7 +530,7 @@ export type AllSanitySchemaTypes =
 
 // Source: src/lib/cms.ts
 // Variable: siteSettingsQuery
-// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{    name,    legalName,    practitioner,    email,    phone,    address,    hours,    portalUrl,    "availabilityStatus": coalesce(availabilityStatus, "accepting"),    availabilityMessaging{      waitlist{        heroCta,        contactHeading,        contactIntro,        ctaHeading,        ctaBody,        homeCtaLabel,        pricingCtaHeading,        pricingCtaBody,        pricingCtaLabel      },      closed{        heroCta,        contactHeading,        contactIntro,        ctaHeading,        ctaBody,        pricingCtaHeading,        pricingCtaBody,        panelHeading,        panelBody,        contactMethodsLabel      }    },    url,    tagline,    areaServed  }
+// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{    name,    legalName,    practitioner,    email,    phone,    address,    hours,    portalUrl,    "availabilityStatus": coalesce(availabilityStatus, "accepting"),    availabilityBadgeMessages,    availabilityMessaging{      waitlist{        heroCta,        contactHeading,        contactIntro,        ctaHeading,        ctaBody,        homeCtaLabel,        pricingCtaHeading,        pricingCtaBody,        pricingCtaLabel      },      closed{        heroCta,        contactHeading,        contactIntro,        ctaHeading,        ctaBody,        pricingCtaHeading,        pricingCtaBody,        panelHeading,        panelBody,        contactMethodsLabel      }    },    url,    tagline,    areaServed  }
 export type SiteSettingsQueryResult = {
   name: string;
   legalName: string;
@@ -527,6 +541,20 @@ export type SiteSettingsQueryResult = {
   hours: Array<string>;
   portalUrl: string;
   availabilityStatus: "accepting" | "closed" | "waitlist";
+  availabilityBadgeMessages: {
+    accepting: {
+      line1: string;
+      line2: string;
+    };
+    waitlist: {
+      line1: string;
+      line2: string;
+    };
+    closed: {
+      line1: string;
+      line2: string;
+    };
+  };
   availabilityMessaging: {
     waitlist: {
       heroCta: string;
@@ -941,7 +969,7 @@ export type SitemapEntriesQueryResult = {
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    '\n  *[_type == "siteSettings" && _id == "siteSettings"][0]{\n    name,\n    legalName,\n    practitioner,\n    email,\n    phone,\n    address,\n    hours,\n    portalUrl,\n    "availabilityStatus": coalesce(availabilityStatus, "accepting"),\n    availabilityMessaging{\n      waitlist{\n        heroCta,\n        contactHeading,\n        contactIntro,\n        ctaHeading,\n        ctaBody,\n        homeCtaLabel,\n        pricingCtaHeading,\n        pricingCtaBody,\n        pricingCtaLabel\n      },\n      closed{\n        heroCta,\n        contactHeading,\n        contactIntro,\n        ctaHeading,\n        ctaBody,\n        pricingCtaHeading,\n        pricingCtaBody,\n        panelHeading,\n        panelBody,\n        contactMethodsLabel\n      }\n    },\n    url,\n    tagline,\n    areaServed\n  }\n': SiteSettingsQueryResult;
+    '\n  *[_type == "siteSettings" && _id == "siteSettings"][0]{\n    name,\n    legalName,\n    practitioner,\n    email,\n    phone,\n    address,\n    hours,\n    portalUrl,\n    "availabilityStatus": coalesce(availabilityStatus, "accepting"),\n    availabilityBadgeMessages,\n    availabilityMessaging{\n      waitlist{\n        heroCta,\n        contactHeading,\n        contactIntro,\n        ctaHeading,\n        ctaBody,\n        homeCtaLabel,\n        pricingCtaHeading,\n        pricingCtaBody,\n        pricingCtaLabel\n      },\n      closed{\n        heroCta,\n        contactHeading,\n        contactIntro,\n        ctaHeading,\n        ctaBody,\n        pricingCtaHeading,\n        pricingCtaBody,\n        panelHeading,\n        panelBody,\n        contactMethodsLabel\n      }\n    },\n    url,\n    tagline,\n    areaServed\n  }\n': SiteSettingsQueryResult;
     '\n  *[_type == "specialty" && active != false] | order(order asc, title asc) {\n    "_key": _id,\n    title,\n    "slug": slug.current,\n    summary,\n    details\n  }\n': SpecialtiesQueryResult;
     '\n  *[_type == "homePage" && _id == "homePage"][0]{\n    hero{\n      kicker,\n      heading,\n      body,\n      ctaLabel,\n      backgroundImage{\n        asset->{\n          _id,\n          url,\n          metadata {\n            dimensions {width, height},\n            lqip\n          }\n        },\n        alt,\n        crop,\n        hotspot\n      }\n    },\n    specialtiesSection{\n      eyebrow,\n      heading,\n      specialties[]{\n        _key,\n        "title": @->title,\n        "slug": @->slug.current,\n        "summary": @->summary,\n        "details": @->details\n      }\n    },\n    aboutPreview{\n      eyebrow,\n      heading,\n      body,\n      ctaLabel,\n      portraitImage{\n        asset->{\n          _id,\n          url,\n          metadata {\n            dimensions {width, height},\n            lqip\n          }\n        },\n        alt,\n        crop,\n        hotspot\n      }\n    },\n    ctaSection{\n      heading,\n      body,\n      ctaLabel,\n      backgroundImage{\n        asset->{\n          _id,\n          url,\n          metadata {\n            dimensions {width, height},\n            lqip\n          }\n        },\n        alt,\n        crop,\n        hotspot\n      }\n    }\n  }\n': HomePageQueryResult;
     '\n  *[_type == "aboutPage" && _id == "aboutPage"][0]{\n    credentials,\n    heading,\n    portraitImage{\n      asset->{\n        _id,\n        url,\n        metadata {\n          dimensions {width, height},\n            lqip\n        }\n      },\n      alt,\n      crop,\n      hotspot\n    },\n    intro,\n    credentialGroups[]{\n      _key,\n      heading,\n      items[]{_key, title, detail},\n      license\n    },\n    space{\n      eyebrow,\n      heading,\n      body,\n      exteriorImage{\n        asset->{\n          _id,\n          url,\n          metadata {\n            dimensions {width, height},\n            lqip\n          }\n        },\n        alt,\n        crop,\n        hotspot\n      },\n      interiorImage{\n        asset->{\n          _id,\n          url,\n          metadata {\n            dimensions {width, height},\n            lqip\n          }\n        },\n        alt,\n        crop,\n        hotspot\n      }\n    },\n    philosophy{\n      eyebrow,\n      quote,\n      attribution,\n      backgroundImage{\n        asset->{\n          _id,\n          url,\n          metadata {\n            dimensions {width, height},\n            lqip\n          }\n        },\n        alt,\n        crop,\n        hotspot\n      }\n    }\n  }\n': AboutPageQueryResult;

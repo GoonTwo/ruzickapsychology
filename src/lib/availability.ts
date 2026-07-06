@@ -8,6 +8,16 @@ export type AvailabilityStatus = (typeof availabilityStatuses)[number];
 
 export const DEFAULT_AVAILABILITY_STATUS: AvailabilityStatus = "accepting";
 
+export type AvailabilityBadgeMessageSet = {
+  line1: string;
+  line2: string;
+};
+
+export type AvailabilityBadgeMessages = Record<
+  AvailabilityStatus,
+  AvailabilityBadgeMessageSet
+>;
+
 export type WaitlistAvailabilityMessaging = {
   heroCta: string;
   contactHeading: string;
@@ -42,6 +52,21 @@ export type AvailabilityMessagingInput = {
   waitlist?: Partial<WaitlistAvailabilityMessaging> | null;
   closed?: Partial<ClosedAvailabilityMessaging> | null;
 } | null;
+
+export const initialAvailabilityBadgeMessages = {
+  accepting: {
+    line1: "ACCEPTING NEW CLIENTS",
+    line2: "IN PERSON OR VIRTUAL",
+  },
+  waitlist: {
+    line1: "JOIN THE WAITLIST",
+    line2: "EMAIL FOR AVAILABILITY",
+  },
+  closed: {
+    line1: "PRACTICE CURRENTLY FULL",
+    line2: "PLEASE CHECK BACK SOON",
+  },
+} as const satisfies AvailabilityBadgeMessages;
 
 const availabilityStatusSet = new Set<AvailabilityStatus>(availabilityStatuses);
 
@@ -119,4 +144,15 @@ export function getAvailabilityStateCopy(
   if (availabilityStatus === "closed") return messaging?.closed ?? null;
 
   return null;
+}
+
+export function getAvailabilityBadgeMessages(
+  status?: unknown,
+  badgeMessages?: Partial<AvailabilityBadgeMessages> | null,
+) {
+  const availabilityStatus = normalizeAvailabilityStatus(status);
+  const messages = badgeMessages?.[availabilityStatus];
+  if (!messages?.line1 || !messages.line2) return null;
+
+  return [messages.line1, messages.line2] as const;
 }

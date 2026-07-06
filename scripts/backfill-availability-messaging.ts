@@ -1,6 +1,9 @@
 import { getCliClient } from "sanity/cli";
 
-import { initialAvailabilityMessaging } from "../src/lib/availability";
+import {
+  initialAvailabilityBadgeMessages,
+  initialAvailabilityMessaging,
+} from "../src/lib/availability";
 
 const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2026-06-24";
 const client = getCliClient({ apiVersion }).withConfig({ useCdn: false });
@@ -8,6 +11,11 @@ const client = getCliClient({ apiVersion }).withConfig({ useCdn: false });
 type AvailabilityStateInput = Record<string, unknown> | null | undefined;
 
 type SiteSettingsDocument = {
+  availabilityBadgeMessages?: {
+    accepting?: AvailabilityStateInput;
+    waitlist?: AvailabilityStateInput;
+    closed?: AvailabilityStateInput;
+  } | null;
   availabilityMessaging?: {
     waitlist?: AvailabilityStateInput;
     closed?: AvailabilityStateInput;
@@ -17,6 +25,18 @@ type SiteSettingsDocument = {
 function stateString(state: AvailabilityStateInput, field: string) {
   const value = state?.[field];
   return typeof value === "string" && value.trim() ? value : undefined;
+}
+
+function badgeMessages(
+  state: AvailabilityStateInput,
+  status: "accepting" | "waitlist" | "closed",
+) {
+  const initial = initialAvailabilityBadgeMessages[status];
+
+  return {
+    line1: stateString(state, "line1") ?? initial.line1,
+    line2: stateString(state, "line2") ?? initial.line2,
+  };
 }
 
 function waitlistMessaging(state: AvailabilityStateInput) {
@@ -80,17 +100,23 @@ function closedMessaging(state: AvailabilityStateInput) {
 
 async function main() {
   const siteSettings = await client.fetch<SiteSettingsDocument | null>(
-    /* groq */ `*[_id == "siteSettings"][0]{availabilityMessaging}`,
+    /* groq */ `*[_id == "siteSettings"][0]{availabilityBadgeMessages, availabilityMessaging}`,
   );
-  const current = siteSettings?.availabilityMessaging;
+  const currentBadgeMessages = siteSettings?.availabilityBadgeMessages;
+  const currentMessaging = siteSettings?.availabilityMessaging;
 
   await client
     .patch("siteSettings")
     .setIfMissing({ availabilityStatus: "accepting" })
     .set({
+      availabilityBadgeMessages: {
+        accepting: badgeMessages(currentBadgeMessages?.accepting, "accepting"),
+        waitlist: badgeMessages(currentBadgeMessages?.waitlist, "waitlist"),
+        closed: badgeMessages(currentBadgeMessages?.closed, "closed"),
+      },
       availabilityMessaging: {
-        waitlist: waitlistMessaging(current?.waitlist),
-        closed: closedMessaging(current?.closed),
+        waitlist: waitlistMessaging(currentMessaging?.waitlist),
+        closed: closedMessaging(currentMessaging?.closed),
       },
     })
     .commit();

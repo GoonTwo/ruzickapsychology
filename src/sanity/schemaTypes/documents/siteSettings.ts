@@ -2,8 +2,26 @@ import { CogIcon } from "@sanity/icons";
 import { defineArrayMember, defineField, defineType } from "sanity";
 import {
   DEFAULT_AVAILABILITY_STATUS,
+  initialAvailabilityBadgeMessages,
   initialAvailabilityMessaging,
 } from "../../../lib/availability";
+
+const badgeMessageFields = [
+  defineField({
+    name: "line1",
+    title: "Line 1",
+    type: "string",
+    description: "Keep this uppercase and 24 characters or fewer.",
+    validation: (rule) => rule.required().max(24),
+  }),
+  defineField({
+    name: "line2",
+    title: "Line 2",
+    type: "string",
+    description: "Keep this uppercase and 24 characters or fewer.",
+    validation: (rule) => rule.required().max(24),
+  }),
+];
 
 const heroAndContactMessagingFields = [
   defineField({
@@ -109,6 +127,7 @@ export const siteSettings = defineType({
   icon: CogIcon,
   initialValue: {
     availabilityStatus: DEFAULT_AVAILABILITY_STATUS,
+    availabilityBadgeMessages: initialAvailabilityBadgeMessages,
     availabilityMessaging: initialAvailabilityMessaging,
   },
   groups: [
@@ -188,6 +207,40 @@ export const siteSettings = defineType({
         layout: "radio",
       },
       initialValue: "accepting",
+    }),
+    defineField({
+      name: "availabilityBadgeMessages",
+      title: "Spinning badge messages",
+      type: "object",
+      group: "availability",
+      description:
+        "Two-line text shown in the rotating hero badge for each availability state.",
+      options: { collapsible: true, collapsed: false },
+      initialValue: initialAvailabilityBadgeMessages,
+      validation: (rule) => rule.required(),
+      fields: [
+        defineField({
+          name: "accepting",
+          title: "Accepting new clients badge",
+          type: "object",
+          validation: (rule) => rule.required(),
+          fields: badgeMessageFields,
+        }),
+        defineField({
+          name: "waitlist",
+          title: "Waitlist only badge",
+          type: "object",
+          validation: (rule) => rule.required(),
+          fields: badgeMessageFields,
+        }),
+        defineField({
+          name: "closed",
+          title: "Not accepting inquiries badge",
+          type: "object",
+          validation: (rule) => rule.required(),
+          fields: badgeMessageFields,
+        }),
+      ],
     }),
     defineField({
       name: "availabilityMessaging",

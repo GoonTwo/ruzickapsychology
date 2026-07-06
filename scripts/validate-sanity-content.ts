@@ -25,6 +25,12 @@ const query = /* groq */ `
   "missingRequiredValues": [
     select(!defined(*[_id == "siteSettings"][0].email) => "siteSettings.email", null),
     select(!defined(*[_id == "siteSettings"][0].portalUrl) => "siteSettings.portalUrl", null),
+    select(!defined(*[_id == "siteSettings"][0].availabilityBadgeMessages.accepting.line1) => "siteSettings.availabilityBadgeMessages.accepting.line1", null),
+    select(!defined(*[_id == "siteSettings"][0].availabilityBadgeMessages.accepting.line2) => "siteSettings.availabilityBadgeMessages.accepting.line2", null),
+    select(!defined(*[_id == "siteSettings"][0].availabilityBadgeMessages.waitlist.line1) => "siteSettings.availabilityBadgeMessages.waitlist.line1", null),
+    select(!defined(*[_id == "siteSettings"][0].availabilityBadgeMessages.waitlist.line2) => "siteSettings.availabilityBadgeMessages.waitlist.line2", null),
+    select(!defined(*[_id == "siteSettings"][0].availabilityBadgeMessages.closed.line1) => "siteSettings.availabilityBadgeMessages.closed.line1", null),
+    select(!defined(*[_id == "siteSettings"][0].availabilityBadgeMessages.closed.line2) => "siteSettings.availabilityBadgeMessages.closed.line2", null),
     select(!defined(*[_id == "siteSettings"][0].availabilityMessaging.waitlist.heroCta) => "siteSettings.availabilityMessaging.waitlist.heroCta", null),
     select(!defined(*[_id == "siteSettings"][0].availabilityMessaging.waitlist.contactHeading) => "siteSettings.availabilityMessaging.waitlist.contactHeading", null),
     select(!defined(*[_id == "siteSettings"][0].availabilityMessaging.waitlist.contactIntro) => "siteSettings.availabilityMessaging.waitlist.contactIntro", null),

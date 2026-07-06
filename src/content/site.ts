@@ -1,5 +1,6 @@
 import {
   DEFAULT_AVAILABILITY_STATUS,
+  initialAvailabilityBadgeMessages,
   initialAvailabilityMessaging,
 } from "../lib/availability";
 
@@ -21,6 +22,7 @@ export const site = {
   ],
   portalUrl: "https://christina-ruzicka.clientsecure.me",
   availabilityStatus: DEFAULT_AVAILABILITY_STATUS,
+  availabilityBadgeMessages: initialAvailabilityBadgeMessages,
   availabilityMessaging: initialAvailabilityMessaging,
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.example.com",
   tagline:

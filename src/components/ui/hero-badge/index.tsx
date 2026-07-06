@@ -1,11 +1,6 @@
 import { FlowerMark } from "@/components/ui/flower-mark";
 import styles from "./styles.module.css";
 
-const RING_MESSAGES = [
-  "ACCEPTING NEW PATIENTS",
-  "IN PERSON OR VIRTUAL",
-] as const;
-
 type FlowerClassName = "heroFlowerEmboss" | "footerFlowerEmboss";
 
 export function RotatingFlowerBadge({
@@ -65,13 +60,14 @@ export function RotatingFlowerBadge({
 }
 
 /** Rotating circular badge with the flower mark centered, over the hero. */
-export function HeroBadge() {
+export function HeroBadge({
+  messages,
+}: {
+  messages: readonly [string, string];
+}) {
   return (
     <div className={styles.heroBadge}>
-      <RotatingFlowerBadge
-        messages={RING_MESSAGES}
-        pathId="rp-hero-badge-path"
-      />
+      <RotatingFlowerBadge messages={messages} pathId="rp-hero-badge-path" />
     </div>
   );
 }

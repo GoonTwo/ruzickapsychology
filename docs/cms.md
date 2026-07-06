@@ -71,6 +71,10 @@ truth for non-default availability copy, including separate fields for the home
 hero CTA, home bottom CTA, pricing bottom CTA, contact page header, and closed
 contact panel.
 
+`siteSettings.availabilityBadgeMessages` contains the two rotating hero badge
+lines for each availability state. Keep each line short, uppercase, and 24
+characters or fewer so the circular text spacing remains balanced.
+
 If the field is missing on an older `siteSettings` document, the frontend treats
 it as `accepting`.
 

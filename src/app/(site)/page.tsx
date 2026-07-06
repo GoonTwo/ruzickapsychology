@@ -15,6 +15,7 @@ import { CtaLink } from "@/components/cta-link";
 import { imageBlurData, imageSrc } from "@/lib/cms-images";
 import {
   DEFAULT_AVAILABILITY_STATUS,
+  getAvailabilityBadgeMessages,
   getAvailabilityStateCopy,
 } from "@/lib/availability";
 import { getHomePage, getSiteSettings } from "@/lib/cms";
@@ -29,6 +30,10 @@ export default async function Home() {
   const availabilityStateCopy = getAvailabilityStateCopy(
     availabilityStatus,
     site?.availabilityMessaging,
+  );
+  const availabilityBadgeMessages = getAvailabilityBadgeMessages(
+    availabilityStatus,
+    site?.availabilityBadgeMessages,
   );
   const waitlistAvailabilityCopy =
     availabilityStatus === "waitlist"
@@ -80,7 +85,9 @@ export default async function Home() {
         ) : null}
         <Container size="xl" className={styles.heroContainer}>
           <div className={styles.heroContent}>
-            {isDefaultAvailability ? <HeroBadge /> : null}
+            {availabilityBadgeMessages ? (
+              <HeroBadge messages={availabilityBadgeMessages} />
+            ) : null}
             <div className={styles.heroText}>
               <p className={styles.heroKicker}>{home.hero.kicker}</p>
               <h1 className={styles.heroHeading}>{home.hero.heading}</h1>

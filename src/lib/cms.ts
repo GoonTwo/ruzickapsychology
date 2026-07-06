@@ -3,6 +3,7 @@ import type { PortableTextBlock } from "@portabletext/react";
 
 import { client } from "@/sanity/lib/client";
 import {
+  type AvailabilityBadgeMessages,
   normalizeAvailabilityStatus,
   type AvailabilityMessaging,
   type AvailabilityStatus,
@@ -23,6 +24,7 @@ export type SiteSettings = {
   hours: readonly string[];
   portalUrl?: string;
   availabilityStatus: AvailabilityStatus;
+  availabilityBadgeMessages?: AvailabilityBadgeMessages | null;
   availabilityMessaging?: AvailabilityMessaging | null;
   url?: string;
   tagline?: string;
@@ -207,6 +209,7 @@ const siteSettingsQuery = defineQuery(/* groq */ `
     hours,
     portalUrl,
     "availabilityStatus": coalesce(availabilityStatus, "accepting"),
+    availabilityBadgeMessages,
     availabilityMessaging{
       waitlist{
         heroCta,
@@ -623,6 +626,7 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
   const settings = await fetchCms<
     Omit<SiteSettings, "availabilityStatus" | "availabilityMessaging"> & {
       availabilityStatus?: string | null;
+      availabilityBadgeMessages?: AvailabilityBadgeMessages | null;
       availabilityMessaging?: AvailabilityMessaging | null;
     }
   >(siteSettingsQuery);
@@ -634,6 +638,7 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
     availabilityStatus: normalizeAvailabilityStatus(
       settings.availabilityStatus,
     ),
+    availabilityBadgeMessages: settings.availabilityBadgeMessages,
     availabilityMessaging: settings.availabilityMessaging,
   };
 }
