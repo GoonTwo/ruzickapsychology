@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { TrackedExternalLink } from "@/components/tracked-external-link";
 import { BackgroundImageLayer } from "@/components/ui/background-image-layer";
+import { buttonClasses } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { DividerGrid } from "@/components/ui/divider-grid";
 import { HeaderSentinel } from "@/components/ui/header-sentinel";
 import { PageShell } from "@/components/ui/page-shell";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
+import {
+  DEFAULT_AVAILABILITY_STATUS,
+  getAvailabilityStateCopy,
+} from "@/lib/availability";
 import { pageMetadata } from "@/lib/seo";
 import { getContactPage, getSiteSettings } from "@/lib/cms";
 import { ContactForm } from "./contact-form";
@@ -30,6 +36,24 @@ export default async function Contact() {
   ]);
   if (!contact || !site) notFound();
 
+  const availabilityStatus =
+    site.availabilityStatus ?? DEFAULT_AVAILABILITY_STATUS;
+  const availabilityStateCopy = getAvailabilityStateCopy(
+    availabilityStatus,
+    site.availabilityMessaging,
+  );
+  const closedCopy =
+    availabilityStatus === "closed" ? site.availabilityMessaging?.closed : null;
+  const isDefaultAvailability =
+    availabilityStatus === DEFAULT_AVAILABILITY_STATUS;
+  const contactHeading = isDefaultAvailability
+    ? contact.heading
+    : availabilityStateCopy?.contactHeading;
+  const contactIntro = isDefaultAvailability
+    ? contact.intro
+    : availabilityStateCopy?.contactIntro;
+  const isClosed = availabilityStatus === "closed";
+
   return (
     <PageShell>
       <section
@@ -47,9 +71,14 @@ export default async function Contact() {
         <Container size="xl" className={styles.headerGrid}>
           <div className={styles.headerCopy}>
             <p className={styles.eyebrow}>{contact.eyebrow}</p>
-            <h1 className={styles.headerHeading}>{contact.heading}</h1>
-            <p className={styles.headerIntro}>{contact.intro}</p>
+            <h1 className={styles.headerHeading}>{contactHeading}</h1>
+            <p className={styles.headerIntro}>{contactIntro}</p>
             <div className={styles.contactMethods}>
+              {isClosed && closedCopy?.contactMethodsLabel ? (
+                <div className={styles.contactMethodsLabel}>
+                  {closedCopy?.contactMethodsLabel}
+                </div>
+              ) : null}
               <div>
                 <a href={`mailto:${site.email}`} className={styles.contactLink}>
                   {site.email}
@@ -60,7 +89,31 @@ export default async function Contact() {
           </div>
 
           <div className={styles.formColumn}>
-            <ContactForm note={contact.formNote} />
+            {isClosed ? (
+              <div className={styles.availabilityPanel}>
+                <p className={styles.availabilityEyebrow}>Availability</p>
+                <h2 className={styles.availabilityHeading}>
+                  {closedCopy?.panelHeading}
+                </h2>
+                <p className={styles.availabilityBody}>
+                  {closedCopy?.panelBody}
+                </p>
+                {site.portalUrl ? (
+                  <TrackedExternalLink
+                    href={site.portalUrl}
+                    event="client_portal_click"
+                    className={buttonClasses(
+                      "secondary",
+                      styles.availabilityButton,
+                    )}
+                  >
+                    Client Portal
+                  </TrackedExternalLink>
+                ) : null}
+              </div>
+            ) : (
+              <ContactForm note={contact.formNote} />
+            )}
           </div>
         </Container>
       </section>

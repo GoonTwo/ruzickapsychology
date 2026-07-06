@@ -37,6 +37,7 @@ Good CMS fields:
 - Page headings, intros, body copy.
 - CTA labels and copy.
 - Practice facts.
+- Practice availability status.
 - Therapy specialties and detailed descriptions.
 - FAQ questions and answers.
 - Blog post title, excerpt, publish date, and body.
@@ -50,6 +51,28 @@ Keep code-owned:
 - Specialty icon mapping and animations.
 - Layout choices, grid spans, and responsive behavior.
 - Analytics event names.
+
+## Practice Availability
+
+`siteSettings.availabilityStatus` controls the public new-client state across
+the home and contact pages:
+
+- `accepting` - default state. Shows the rotating accepting-new-clients badge,
+  existing consultation CTAs, and the contact form.
+- `waitlist` - hides the rotating badge, changes consultation CTAs to waitlist
+  language, and keeps the contact form available.
+- `closed` - hides the rotating badge, removes new-client inquiry CTAs from the
+  contact flow, and replaces the contact form with a Client Portal note for
+  current clients.
+
+`siteSettings.availabilityMessaging` contains the editable copy for the
+`waitlist` and `closed` states. This Sanity object is the runtime source of
+truth for non-default availability copy, including separate fields for the home
+hero CTA, home bottom CTA, pricing bottom CTA, contact page header, and closed
+contact panel.
+
+If the field is missing on an older `siteSettings` document, the frontend treats
+it as `accepting`.
 
 ## Seeding
 

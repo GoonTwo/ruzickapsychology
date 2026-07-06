@@ -18,6 +18,7 @@ import {
   feeItem,
   processStep,
   quoteSection,
+  reimbursementGuideItem,
   therapySpaceSection,
 } from "./objects/pageObjects";
 import {
@@ -39,6 +40,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     credentialGroup,
     processStep,
     feeItem,
+    reimbursementGuideItem,
     faqItem,
     therapySpaceSection,
     quoteSection,

@@ -13,12 +13,49 @@ import { Section } from "@/components/ui/section";
 import { TextLink } from "@/components/ui/text-link";
 import { CtaLink } from "@/components/cta-link";
 import { imageBlurData, imageSrc } from "@/lib/cms-images";
-import { getHomePage } from "@/lib/cms";
+import {
+  DEFAULT_AVAILABILITY_STATUS,
+  getAvailabilityStateCopy,
+} from "@/lib/availability";
+import { getHomePage, getSiteSettings } from "@/lib/cms";
 import styles from "./styles.module.css";
 
 export default async function Home() {
-  const home = await getHomePage();
+  const [home, site] = await Promise.all([getHomePage(), getSiteSettings()]);
   if (!home) notFound();
+
+  const availabilityStatus =
+    site?.availabilityStatus ?? DEFAULT_AVAILABILITY_STATUS;
+  const availabilityStateCopy = getAvailabilityStateCopy(
+    availabilityStatus,
+    site?.availabilityMessaging,
+  );
+  const waitlistAvailabilityCopy =
+    availabilityStatus === "waitlist"
+      ? site?.availabilityMessaging?.waitlist
+      : null;
+  const isDefaultAvailability =
+    availabilityStatus === DEFAULT_AVAILABILITY_STATUS;
+  const heroCtaHref =
+    availabilityStatus === "closed" ? "/specialties" : "/contact";
+  const heroCtaEvent =
+    availabilityStatus === "closed"
+      ? "specialties_cta_click"
+      : "consultation_cta_click";
+  const heroCtaLabel = isDefaultAvailability
+    ? home.hero.cta
+    : availabilityStateCopy?.heroCta;
+  const ctaHeading = isDefaultAvailability
+    ? home.cta.heading
+    : availabilityStateCopy?.ctaHeading;
+  const ctaBody = isDefaultAvailability
+    ? home.cta.body
+    : availabilityStateCopy?.ctaBody;
+  const ctaLabel =
+    availabilityStatus === "waitlist"
+      ? waitlistAvailabilityCopy?.homeCtaLabel
+      : home.cta.cta;
+
   const heroImageSrc = imageSrc(home.hero.backgroundImage);
   const heroBlurData = imageBlurData(home.hero.backgroundImage);
 
@@ -43,18 +80,20 @@ export default async function Home() {
         ) : null}
         <Container size="xl" className={styles.heroContainer}>
           <div className={styles.heroContent}>
-            <HeroBadge />
+            {isDefaultAvailability ? <HeroBadge /> : null}
             <div className={styles.heroText}>
               <p className={styles.heroKicker}>{home.hero.kicker}</p>
               <h1 className={styles.heroHeading}>{home.hero.heading}</h1>
               <p className={styles.heroBody}>{home.hero.body}</p>
-              <CtaLink
-                href="/contact"
-                event="consultation_cta_click"
-                variant="primary"
-              >
-                {home.hero.cta}
-              </CtaLink>
+              {heroCtaLabel ? (
+                <CtaLink
+                  href={heroCtaHref}
+                  event={heroCtaEvent}
+                  variant="primary"
+                >
+                  {heroCtaLabel}
+                </CtaLink>
+              ) : null}
             </div>
           </div>
         </Container>
@@ -114,9 +153,9 @@ export default async function Home() {
 
       {/* CTA band */}
       <CtaBand
-        heading={home.cta.heading}
-        body={home.cta.body}
-        cta={home.cta.cta}
+        heading={ctaHeading}
+        body={ctaBody}
+        cta={availabilityStatus === "closed" ? undefined : ctaLabel}
         href="/contact"
         event="consultation_cta_click"
         backgroundImage={home.cta.backgroundImage}

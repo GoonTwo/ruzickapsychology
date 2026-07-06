@@ -154,6 +154,16 @@ export type PricingPage = {
     heading?: string;
     body?: SimplePortableText;
   };
+  reimbursementGuide?: {
+    eyebrow?: string;
+    heading?: string;
+    intro?: string;
+    items?: Array<
+      {
+        _key: string;
+      } & ReimbursementGuideItem
+    >;
+  };
   cta?: Cta;
   ctaBackgroundImage?: ImageWithAlt;
 };
@@ -272,6 +282,32 @@ export type SiteSettings = {
   address: Address;
   hours: Array<string>;
   portalUrl: string;
+  availabilityStatus?: "accepting" | "waitlist" | "closed";
+  availabilityMessaging: {
+    waitlist: {
+      heroCta: string;
+      contactHeading: string;
+      contactIntro: string;
+      ctaHeading: string;
+      ctaBody: string;
+      homeCtaLabel: string;
+      pricingCtaHeading: string;
+      pricingCtaBody: string;
+      pricingCtaLabel: string;
+    };
+    closed: {
+      heroCta: string;
+      contactHeading: string;
+      contactIntro: string;
+      ctaHeading: string;
+      ctaBody: string;
+      pricingCtaHeading: string;
+      pricingCtaBody: string;
+      panelHeading: string;
+      panelBody: string;
+      contactMethodsLabel: string;
+    };
+  };
   url?: string;
   tagline?: string;
   areaServed?: Array<string>;
@@ -288,6 +324,13 @@ export type FaqItem = {
   _type: "faqItem";
   question: string;
   answer: Array<string>;
+};
+
+export type ReimbursementGuideItem = {
+  _type: "reimbursementGuideItem";
+  eyebrow?: string;
+  title: string;
+  body?: SimplePortableText;
 };
 
 export type FeeItem = {
@@ -455,6 +498,7 @@ export type AllSanitySchemaTypes =
   | SiteSettings
   | Address
   | FaqItem
+  | ReimbursementGuideItem
   | FeeItem
   | ProcessStep
   | CredentialGroup
@@ -472,7 +516,7 @@ export type AllSanitySchemaTypes =
 
 // Source: src/lib/cms.ts
 // Variable: siteSettingsQuery
-// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{    name,    legalName,    practitioner,    email,    phone,    address,    hours,    portalUrl,    url,    tagline,    areaServed  }
+// Query: *[_type == "siteSettings" && _id == "siteSettings"][0]{    name,    legalName,    practitioner,    email,    phone,    address,    hours,    portalUrl,    "availabilityStatus": coalesce(availabilityStatus, "accepting"),    availabilityMessaging{      waitlist{        heroCta,        contactHeading,        contactIntro,        ctaHeading,        ctaBody,        homeCtaLabel,        pricingCtaHeading,        pricingCtaBody,        pricingCtaLabel      },      closed{        heroCta,        contactHeading,        contactIntro,        ctaHeading,        ctaBody,        pricingCtaHeading,        pricingCtaBody,        panelHeading,        panelBody,        contactMethodsLabel      }    },    url,    tagline,    areaServed  }
 export type SiteSettingsQueryResult = {
   name: string;
   legalName: string;
@@ -482,6 +526,32 @@ export type SiteSettingsQueryResult = {
   address: Address;
   hours: Array<string>;
   portalUrl: string;
+  availabilityStatus: "accepting" | "closed" | "waitlist";
+  availabilityMessaging: {
+    waitlist: {
+      heroCta: string;
+      contactHeading: string;
+      contactIntro: string;
+      ctaHeading: string;
+      ctaBody: string;
+      homeCtaLabel: string;
+      pricingCtaHeading: string;
+      pricingCtaBody: string;
+      pricingCtaLabel: string;
+    };
+    closed: {
+      heroCta: string;
+      contactHeading: string;
+      contactIntro: string;
+      ctaHeading: string;
+      ctaBody: string;
+      pricingCtaHeading: string;
+      pricingCtaBody: string;
+      panelHeading: string;
+      panelBody: string;
+      contactMethodsLabel: string;
+    };
+  };
   url: string | null;
   tagline: string | null;
   areaServed: Array<string> | null;
@@ -710,7 +780,7 @@ export type SpecialtiesPageQueryResult = {
 
 // Source: src/lib/cms.ts
 // Variable: pricingPageQuery
-// Query: *[_type == "pricingPage" && _id == "pricingPage"][0]{    header,    fees{      heading,      items[]{_key, label, detail, price},      note    },    insurance{      heading,      body    },    cta,    ctaBackgroundImage{      asset->{        _id,        url,        metadata {          dimensions {width, height},            lqip        }      },      alt,      crop,      hotspot    }  }
+// Query: *[_type == "pricingPage" && _id == "pricingPage"][0]{    header,    fees{      heading,      items[]{_key, label, detail, price},      note    },    insurance{      heading,      body    },    reimbursementGuide{      eyebrow,      heading,      intro,      items[]{_key, eyebrow, title, body}    },    cta,    ctaBackgroundImage{      asset->{        _id,        url,        metadata {          dimensions {width, height},            lqip        }      },      alt,      crop,      hotspot    }  }
 export type PricingPageQueryResult = {
   header: PageHeader | null;
   fees: {
@@ -726,6 +796,17 @@ export type PricingPageQueryResult = {
   insurance: {
     heading: string | null;
     body: SimplePortableText | null;
+  } | null;
+  reimbursementGuide: {
+    eyebrow: string | null;
+    heading: string | null;
+    intro: string | null;
+    items: Array<{
+      _key: string;
+      eyebrow: string | null;
+      title: string;
+      body: SimplePortableText | null;
+    }> | null;
   } | null;
   cta: Cta | null;
   ctaBackgroundImage: {
@@ -860,12 +941,12 @@ export type SitemapEntriesQueryResult = {
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    '\n  *[_type == "siteSettings" && _id == "siteSettings"][0]{\n    name,\n    legalName,\n    practitioner,\n    email,\n    phone,\n    address,\n    hours,\n    portalUrl,\n    url,\n    tagline,\n    areaServed\n  }\n': SiteSettingsQueryResult;
+    '\n  *[_type == "siteSettings" && _id == "siteSettings"][0]{\n    name,\n    legalName,\n    practitioner,\n    email,\n    phone,\n    address,\n    hours,\n    portalUrl,\n    "availabilityStatus": coalesce(availabilityStatus, "accepting"),\n    availabilityMessaging{\n      waitlist{\n        heroCta,\n        contactHeading,\n        contactIntro,\n        ctaHeading,\n        ctaBody,\n        homeCtaLabel,\n        pricingCtaHeading,\n        pricingCtaBody,\n        pricingCtaLabel\n      },\n      closed{\n        heroCta,\n        contactHeading,\n        contactIntro,\n        ctaHeading,\n        ctaBody,\n        pricingCtaHeading,\n        pricingCtaBody,\n        panelHeading,\n        panelBody,\n        contactMethodsLabel\n      }\n    },\n    url,\n    tagline,\n    areaServed\n  }\n': SiteSettingsQueryResult;
     '\n  *[_type == "specialty" && active != false] | order(order asc, title asc) {\n    "_key": _id,\n    title,\n    "slug": slug.current,\n    summary,\n    details\n  }\n': SpecialtiesQueryResult;
     '\n  *[_type == "homePage" && _id == "homePage"][0]{\n    hero{\n      kicker,\n      heading,\n      body,\n      ctaLabel,\n      backgroundImage{\n        asset->{\n          _id,\n          url,\n          metadata {\n            dimensions {width, height},\n            lqip\n          }\n        },\n        alt,\n        crop,\n        hotspot\n      }\n    },\n    specialtiesSection{\n      eyebrow,\n      heading,\n      specialties[]{\n        _key,\n        "title": @->title,\n        "slug": @->slug.current,\n        "summary": @->summary,\n        "details": @->details\n      }\n    },\n    aboutPreview{\n      eyebrow,\n      heading,\n      body,\n      ctaLabel,\n      portraitImage{\n        asset->{\n          _id,\n          url,\n          metadata {\n            dimensions {width, height},\n            lqip\n          }\n        },\n        alt,\n        crop,\n        hotspot\n      }\n    },\n    ctaSection{\n      heading,\n      body,\n      ctaLabel,\n      backgroundImage{\n        asset->{\n          _id,\n          url,\n          metadata {\n            dimensions {width, height},\n            lqip\n          }\n        },\n        alt,\n        crop,\n        hotspot\n      }\n    }\n  }\n': HomePageQueryResult;
     '\n  *[_type == "aboutPage" && _id == "aboutPage"][0]{\n    credentials,\n    heading,\n    portraitImage{\n      asset->{\n        _id,\n        url,\n        metadata {\n          dimensions {width, height},\n            lqip\n        }\n      },\n      alt,\n      crop,\n      hotspot\n    },\n    intro,\n    credentialGroups[]{\n      _key,\n      heading,\n      items[]{_key, title, detail},\n      license\n    },\n    space{\n      eyebrow,\n      heading,\n      body,\n      exteriorImage{\n        asset->{\n          _id,\n          url,\n          metadata {\n            dimensions {width, height},\n            lqip\n          }\n        },\n        alt,\n        crop,\n        hotspot\n      },\n      interiorImage{\n        asset->{\n          _id,\n          url,\n          metadata {\n            dimensions {width, height},\n            lqip\n          }\n        },\n        alt,\n        crop,\n        hotspot\n      }\n    },\n    philosophy{\n      eyebrow,\n      quote,\n      attribution,\n      backgroundImage{\n        asset->{\n          _id,\n          url,\n          metadata {\n            dimensions {width, height},\n            lqip\n          }\n        },\n        alt,\n        crop,\n        hotspot\n      }\n    }\n  }\n': AboutPageQueryResult;
     '\n  *[_type == "specialtiesPage" && _id == "specialtiesPage"][0]{\n    header,\n    specialties[]{\n      _key,\n      "title": @->title,\n      "slug": @->slug.current,\n      "summary": @->summary,\n      "details": @->details\n    },\n    modality{\n      eyebrow,\n      heading,\n      body,\n      backgroundImage{\n        asset->{\n          _id,\n          url,\n          metadata {\n            dimensions {width, height},\n            lqip\n          }\n        },\n        alt,\n        crop,\n        hotspot\n      }\n    }\n  }\n': SpecialtiesPageQueryResult;
-    '\n  *[_type == "pricingPage" && _id == "pricingPage"][0]{\n    header,\n    fees{\n      heading,\n      items[]{_key, label, detail, price},\n      note\n    },\n    insurance{\n      heading,\n      body\n    },\n    cta,\n    ctaBackgroundImage{\n      asset->{\n        _id,\n        url,\n        metadata {\n          dimensions {width, height},\n            lqip\n        }\n      },\n      alt,\n      crop,\n      hotspot\n    }\n  }\n': PricingPageQueryResult;
+    '\n  *[_type == "pricingPage" && _id == "pricingPage"][0]{\n    header,\n    fees{\n      heading,\n      items[]{_key, label, detail, price},\n      note\n    },\n    insurance{\n      heading,\n      body\n    },\n    reimbursementGuide{\n      eyebrow,\n      heading,\n      intro,\n      items[]{_key, eyebrow, title, body}\n    },\n    cta,\n    ctaBackgroundImage{\n      asset->{\n        _id,\n        url,\n        metadata {\n          dimensions {width, height},\n            lqip\n        }\n      },\n      alt,\n      crop,\n      hotspot\n    }\n  }\n': PricingPageQueryResult;
     '\n  *[_type == "contactPage" && _id == "contactPage"][0]{\n    header,\n    formNote,\n    headerBackgroundImage{\n      asset->{\n        _id,\n        url,\n        metadata {\n          dimensions {width, height},\n            lqip\n        }\n      },\n      alt,\n      crop,\n      hotspot\n    },\n    process{\n      eyebrow,\n      heading,\n      steps[]{_key, number, title, body}\n    }\n  }\n': ContactPageQueryResult;
     '\n  *[_type == "faqPage" && _id == "faqPage"][0]{\n    heading,\n    intro,\n    items[]{_key, question, answer},\n    cta,\n    ctaBackgroundImage{\n      asset->{\n        _id,\n        url,\n        metadata {\n          dimensions {width, height},\n            lqip\n        }\n      },\n      alt,\n      crop,\n      hotspot\n    }\n  }\n': FaqPageQueryResult;
     '\n  *[_type == "post" && slug.current == $slug][0] {\n    _updatedAt,\n    title,\n    "slug": slug.current,\n    publishedAt,\n    excerpt,\n    body,\n    "bodyText": body[].children[].text\n  }\n': BlogPostQueryResult;

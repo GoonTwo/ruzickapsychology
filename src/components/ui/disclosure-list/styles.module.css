@@ -7,13 +7,13 @@
 }
 
 .summary {
+  composes: list-row from global;
   display: flex;
   cursor: pointer;
   list-style: none;
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  padding-block: 1.5rem;
 }
 
 .summary::-webkit-details-marker {
@@ -24,6 +24,16 @@
   flex-shrink: 0;
   color: var(--color-accent);
   transition: transform 0.3s ease;
+}
+
+.titleStack {
+  min-width: 0;
+}
+
+.eyebrow {
+  composes: list-row-eyebrow from global;
+  display: block;
+  margin-bottom: 0.75rem;
 }
 
 .title {
@@ -40,6 +50,7 @@
 }
 
 .body {
+  composes: list-row-inset from global;
   padding-right: 2.5rem;
   padding-bottom: 1.75rem;
 }

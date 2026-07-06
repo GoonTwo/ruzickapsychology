@@ -1,3 +1,8 @@
+import {
+  DEFAULT_AVAILABILITY_STATUS,
+  initialAvailabilityMessaging,
+} from "../lib/availability";
+
 export const site = {
   name: "Ruzicka Psychology",
   legalName: "Ruzicka Psychology PLLC",
@@ -15,6 +20,8 @@ export const site = {
     "Evenings by request",
   ],
   portalUrl: "https://christina-ruzicka.clientsecure.me",
+  availabilityStatus: DEFAULT_AVAILABILITY_STATUS,
+  availabilityMessaging: initialAvailabilityMessaging,
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.example.com",
   tagline:
     "Evidence-based psychotherapy tailored to your unique story. Specialized support for couples seeking connection, and women navigating maternal mental health and postpartum anxiety.",

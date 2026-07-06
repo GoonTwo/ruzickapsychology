@@ -1,6 +1,12 @@
 declare const styles: {
+  readonly availabilityBody: string;
+  readonly availabilityButton: string;
+  readonly availabilityEyebrow: string;
+  readonly availabilityHeading: string;
+  readonly availabilityPanel: string;
   readonly contactLink: string;
   readonly contactMethods: string;
+  readonly contactMethodsLabel: string;
   readonly detailDivider: string;
   readonly detailLabel: string;
   readonly detailNote: string;

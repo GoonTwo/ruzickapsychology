@@ -161,6 +161,8 @@ async function buildDocuments(): Promise<SeedDocument[]> {
       address: site.address,
       hours: site.hours,
       portalUrl: site.portalUrl,
+      availabilityStatus: site.availabilityStatus,
+      availabilityMessaging: site.availabilityMessaging,
       url: site.url,
       tagline: site.tagline,
       areaServed: site.areaServed,
@@ -270,6 +272,20 @@ async function buildDocuments(): Promise<SeedDocument[]> {
           pricing.insurance.body,
           "pricing-insurance",
         ),
+      },
+      reimbursementGuide: {
+        eyebrow: pricing.reimbursementGuide.eyebrow,
+        heading: pricing.reimbursementGuide.heading,
+        intro: pricing.reimbursementGuide.intro,
+        items: pricing.reimbursementGuide.items.map((item, index) => ({
+          _key: keyFor("reimbursement-guide-item", `${index}-${item.title}`),
+          eyebrow: item.eyebrow,
+          title: item.title,
+          body: paragraphsToPortableText(
+            item.body,
+            `pricing-reimbursement-guide-${index}`,
+          ),
+        })),
       },
       cta: {
         heading: pricing.cta.heading,

@@ -20,6 +20,34 @@ export const pricing = {
       "A limited number of sliding-scale spaces are reserved for those with genuine financial need—please don't hesitate to ask.",
     ],
   },
+  reimbursementGuide: {
+    eyebrow: "Out-of-network benefits",
+    heading: "Are You Eligible for Insurance Reimbursement?",
+    intro:
+      "Follow these steps below to get the information you need from your insurance company.",
+    items: [
+      {
+        eyebrow: "Step 1",
+        title: "Call your insurance company",
+        body: ["Coming soon"],
+      },
+      {
+        eyebrow: "Step 2",
+        title: "Find out if you have out-of-network benefits",
+        body: ["Coming soon"],
+      },
+      {
+        eyebrow: "Step 3",
+        title: "Find out if you owe a deductible before the coverage kicks in",
+        body: ["Coming soon"],
+      },
+      {
+        eyebrow: "Step 4",
+        title: "Find out how much your plan will reimburse you",
+        body: ["Coming soon"],
+      },
+    ],
+  },
   cta: {
     heading: "Have a question about fit or fees?",
     body: "Start with a complimentary 15 minute call. No pressure, no commitment.",

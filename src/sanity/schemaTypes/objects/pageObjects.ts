@@ -110,6 +110,31 @@ export const feeItem = defineType({
   ],
 });
 
+export const reimbursementGuideItem = defineType({
+  name: "reimbursementGuideItem",
+  title: "Reimbursement Guide Item",
+  type: "object",
+  icon: NumberIcon,
+  fields: [
+    defineField({
+      name: "eyebrow",
+      title: "Eyebrow",
+      type: "string",
+    }),
+    defineField({
+      name: "title",
+      title: "Step title",
+      type: "string",
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: "body",
+      title: "Step content",
+      type: "simplePortableText",
+    }),
+  ],
+});
+
 export const faqItem = defineType({
   name: "faqItem",
   title: "FAQ Item",

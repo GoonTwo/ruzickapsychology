@@ -216,6 +216,22 @@ export const pricingPage = defineType({
         }),
       ],
     }),
+    defineField({
+      name: "reimbursementGuide",
+      title: "Insurance reimbursement guide",
+      type: "object",
+      fields: [
+        defineField({ name: "eyebrow", title: "Eyebrow", type: "string" }),
+        defineField({ name: "heading", title: "Heading", type: "string" }),
+        defineField({ name: "intro", title: "Intro", type: "text", rows: 3 }),
+        defineField({
+          name: "items",
+          title: "Steps",
+          type: "array",
+          of: [defineArrayMember({ type: "reimbursementGuideItem" })],
+        }),
+      ],
+    }),
     defineField({ name: "cta", title: "Contact CTA", type: "cta" }),
     defineField({
       name: "ctaBackgroundImage",

@@ -2,6 +2,11 @@ import { defineQuery, type QueryParams } from "next-sanity";
 import type { PortableTextBlock } from "@portabletext/react";
 
 import { client } from "@/sanity/lib/client";
+import {
+  normalizeAvailabilityStatus,
+  type AvailabilityMessaging,
+  type AvailabilityStatus,
+} from "./availability";
 import type { SanityImageValue } from "./cms-images";
 
 export type RichText = PortableTextBlock[];
@@ -17,6 +22,8 @@ export type SiteSettings = {
   address: { line1: string; line2: string; note?: string };
   hours: readonly string[];
   portalUrl?: string;
+  availabilityStatus: AvailabilityStatus;
+  availabilityMessaging?: AvailabilityMessaging | null;
   url?: string;
   tagline?: string;
   areaServed?: readonly string[];
@@ -113,6 +120,17 @@ export type PricingPageContent = {
     note?: string;
   };
   insurance?: { heading?: string; body?: RichText };
+  reimbursementGuide?: {
+    eyebrow?: string;
+    heading?: string;
+    intro?: string;
+    items?: ReadonlyArray<{
+      _key?: string;
+      eyebrow?: string;
+      title: string;
+      body?: RichText;
+    }>;
+  };
   cta?: {
     heading?: string;
     body?: string;
@@ -188,6 +206,32 @@ const siteSettingsQuery = defineQuery(/* groq */ `
     address,
     hours,
     portalUrl,
+    "availabilityStatus": coalesce(availabilityStatus, "accepting"),
+    availabilityMessaging{
+      waitlist{
+        heroCta,
+        contactHeading,
+        contactIntro,
+        ctaHeading,
+        ctaBody,
+        homeCtaLabel,
+        pricingCtaHeading,
+        pricingCtaBody,
+        pricingCtaLabel
+      },
+      closed{
+        heroCta,
+        contactHeading,
+        contactIntro,
+        ctaHeading,
+        ctaBody,
+        pricingCtaHeading,
+        pricingCtaBody,
+        panelHeading,
+        panelBody,
+        contactMethodsLabel
+      }
+    },
     url,
     tagline,
     areaServed
@@ -395,6 +439,12 @@ const pricingPageQuery = defineQuery(/* groq */ `
       heading,
       body
     },
+    reimbursementGuide{
+      eyebrow,
+      heading,
+      intro,
+      items[]{_key, eyebrow, title, body}
+    },
     cta,
     ctaBackgroundImage{
       asset->{
@@ -569,8 +619,23 @@ function normalizeSpecialtyList(items?: RawSpecialty[] | null) {
   );
 }
 
-export async function getSiteSettings() {
-  return fetchCms<SiteSettings>(siteSettingsQuery);
+export async function getSiteSettings(): Promise<SiteSettings | null> {
+  const settings = await fetchCms<
+    Omit<SiteSettings, "availabilityStatus" | "availabilityMessaging"> & {
+      availabilityStatus?: string | null;
+      availabilityMessaging?: AvailabilityMessaging | null;
+    }
+  >(siteSettingsQuery);
+
+  if (!settings) return null;
+
+  return {
+    ...settings,
+    availabilityStatus: normalizeAvailabilityStatus(
+      settings.availabilityStatus,
+    ),
+    availabilityMessaging: settings.availabilityMessaging,
+  };
 }
 
 export async function getSpecialties() {
@@ -680,6 +745,7 @@ export async function getPricingPage(): Promise<PricingPageContent | null> {
     header?: { eyebrow?: string; heading?: string; intro?: string };
     fees?: PricingPageContent["fees"];
     insurance?: PricingPageContent["insurance"];
+    reimbursementGuide?: PricingPageContent["reimbursementGuide"];
     cta?: { heading?: string; body?: string; label?: string };
     ctaBackgroundImage?: SanityImageValue;
   }>(pricingPageQuery);
@@ -692,6 +758,7 @@ export async function getPricingPage(): Promise<PricingPageContent | null> {
     intro: doc.header.intro,
     fees: doc.fees,
     insurance: doc.insurance,
+    reimbursementGuide: doc.reimbursementGuide,
     cta: doc.cta
       ? {
           heading: doc.cta.heading,

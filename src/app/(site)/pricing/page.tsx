@@ -1,10 +1,21 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CtaBand } from "@/components/cta-band";
+import {
+  DisclosureItem,
+  DisclosureList,
+} from "@/components/ui/disclosure-list";
+import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/ui/page-header";
 import { PortableContent } from "@/components/ui/portable-content";
+import { Section } from "@/components/ui/section";
+import { SectionHeading } from "@/components/ui/section-heading";
+import {
+  DEFAULT_AVAILABILITY_STATUS,
+  getAvailabilityStateCopy,
+} from "@/lib/availability";
 import { pageMetadata } from "@/lib/seo";
-import { getPricingPage } from "@/lib/cms";
+import { getPricingPage, getSiteSettings } from "@/lib/cms";
 import styles from "./styles.module.css";
 
 export const metadata: Metadata = pageMetadata({
@@ -15,8 +26,45 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default async function Pricing() {
-  const pricing = await getPricingPage();
+  const [pricing, site] = await Promise.all([
+    getPricingPage(),
+    getSiteSettings(),
+  ]);
   if (!pricing) notFound();
+
+  const availabilityStatus =
+    site?.availabilityStatus ?? DEFAULT_AVAILABILITY_STATUS;
+  const availabilityStateCopy = getAvailabilityStateCopy(
+    availabilityStatus,
+    site?.availabilityMessaging,
+  );
+  const waitlistAvailabilityCopy =
+    availabilityStatus === "waitlist"
+      ? site?.availabilityMessaging?.waitlist
+      : null;
+  const isDefaultAvailability =
+    availabilityStatus === DEFAULT_AVAILABILITY_STATUS;
+  const ctaHeading = isDefaultAvailability
+    ? pricing.cta?.heading
+    : availabilityStateCopy?.pricingCtaHeading;
+  const ctaBody = isDefaultAvailability
+    ? pricing.cta?.body
+    : availabilityStateCopy?.pricingCtaBody;
+  const ctaLabel =
+    availabilityStatus === "waitlist"
+      ? waitlistAvailabilityCopy?.pricingCtaLabel
+      : isDefaultAvailability
+        ? pricing.cta?.cta
+        : undefined;
+
+  const reimbursementGuideItems =
+    pricing.reimbursementGuide?.items?.filter((item) => item.title) ?? [];
+  const hasReimbursementGuide =
+    pricing.reimbursementGuide &&
+    (pricing.reimbursementGuide.eyebrow ||
+      pricing.reimbursementGuide.heading ||
+      pricing.reimbursementGuide.intro ||
+      reimbursementGuideItems.length > 0);
 
   return (
     <div className={styles.root}>
@@ -63,15 +111,44 @@ export default async function Pricing() {
         </div>
       </PageHeader>
 
+      {hasReimbursementGuide ? (
+        <Section tone="feature" size="spacious">
+          <Container size="md">
+            {pricing.reimbursementGuide?.heading ? (
+              <SectionHeading
+                eyebrow={pricing.reimbursementGuide.eyebrow}
+                heading={pricing.reimbursementGuide.heading}
+                intro={pricing.reimbursementGuide.intro}
+                headingAs="h2"
+              />
+            ) : null}
+
+            {reimbursementGuideItems.length > 0 ? (
+              <DisclosureList>
+                {reimbursementGuideItems.map((item) => (
+                  <DisclosureItem
+                    key={item._key ?? item.title}
+                    eyebrow={item.eyebrow}
+                    title={item.title}
+                  >
+                    <PortableContent value={item.body} />
+                  </DisclosureItem>
+                ))}
+              </DisclosureList>
+            ) : null}
+          </Container>
+        </Section>
+      ) : null}
+
       {/* CTA */}
-      {pricing.cta ? (
+      {ctaHeading ? (
         <CtaBand
-          heading={pricing.cta.heading}
-          body={pricing.cta.body}
-          cta={pricing.cta.cta}
+          heading={ctaHeading}
+          body={ctaBody}
+          cta={ctaLabel}
           href="/contact"
           event="consultation_cta_click"
-          backgroundImage={pricing.cta.backgroundImage}
+          backgroundImage={pricing.cta?.backgroundImage}
         />
       ) : null}
     </div>

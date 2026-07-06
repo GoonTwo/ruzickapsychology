@@ -10,16 +10,20 @@ export function DisclosureList({ className, ...props }: ComponentProps<"div">) {
 }
 
 export function DisclosureItem({
+  eyebrow,
   title,
   children,
   className,
+  eyebrowClassName = styles.eyebrow,
   summaryClassName,
   titleClassName = styles.title,
   bodyClassName = styles.bodyText,
   bodySpacing = true,
   ...props
 }: {
+  eyebrow?: ReactNode;
   title: ReactNode;
+  eyebrowClassName?: string;
   children: ReactNode;
   summaryClassName?: string;
   titleClassName?: string;
@@ -29,7 +33,10 @@ export function DisclosureItem({
   return (
     <details className={classNames(styles.item, className)} {...props}>
       <summary className={classNames(styles.summary, summaryClassName)}>
-        <span className={titleClassName}>{title}</span>
+        <span className={styles.titleStack}>
+          {eyebrow ? <span className={eyebrowClassName}>{eyebrow}</span> : null}
+          <span className={titleClassName}>{title}</span>
+        </span>
         <span className={styles.icon} aria-hidden>
           <svg
             width="22"
