@@ -1,0 +1,45 @@
+.twoColumn {
+  align-items: start;
+}
+
+.twoColumn > * {
+  grid-column: 1 / -1;
+}
+
+.concernList {
+  display: grid;
+  gap: 0;
+  list-style: none;
+  border-top: 1px solid var(--color-muted);
+}
+
+.concernList li {
+  border-bottom: 1px solid var(--color-muted);
+  padding: 1rem 0;
+}
+
+.faqList {
+  margin-top: var(--space-8);
+}
+
+.ctaBodyText {
+  display: block;
+}
+
+.ctaSupportLinks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 1.5rem;
+  margin-top: var(--space-4);
+}
+
+@media (min-width: 1024px) {
+  .twoColumn > :first-child {
+    grid-column: 1 / span 6;
+  }
+
+  .twoColumn > :last-child {
+    grid-column: 8 / span 5;
+  }
+}

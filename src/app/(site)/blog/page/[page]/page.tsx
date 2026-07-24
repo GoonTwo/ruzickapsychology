@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { BlogIndex } from "../../blog-index";
 import {
   getBlogPageCount,
   getBlogPageCountForBuild,
   getPostMetaPage,
-} from "@/lib/blog";
-import { pageMetadata } from "@/lib/seo";
+} from "@/data/blog";
+import { pageMetadata } from "@/config/seo";
+import { BlogIndexPage } from "@/page-modules/blog-index";
 
 export const dynamicParams = false;
 
@@ -28,7 +28,9 @@ export async function generateMetadata(
   });
 }
 
-export default async function BlogPage(props: PageProps<"/blog/page/[page]">) {
+export default async function PaginatedBlogRoute(
+  props: PageProps<"/blog/page/[page]">,
+) {
   const { page } = await props.params;
   const currentPage = Number(page);
   const totalPages = await getBlogPageCount();
@@ -41,11 +43,9 @@ export default async function BlogPage(props: PageProps<"/blog/page/[page]">) {
     notFound();
   }
 
+  const posts = await getPostMetaPage(currentPage);
+
   return (
-    <BlogIndex
-      posts={await getPostMetaPage(currentPage)}
-      page={currentPage}
-      totalPages={totalPages}
-    />
+    <BlogIndexPage posts={posts} page={currentPage} totalPages={totalPages} />
   );
 }

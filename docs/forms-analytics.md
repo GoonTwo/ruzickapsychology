@@ -2,7 +2,7 @@
 
 ## Contact Form
 
-The contact form is `src/app/(site)/contact/contact-form/index.tsx`.
+The contact form is `src/page-modules/contact/contact-form/index.tsx`.
 
 It is a client component that:
 
@@ -57,7 +57,9 @@ Tracked events:
 - `client_portal_click` - Client Portal links.
 - `inquiry_submitted` - successful contact form delivery.
 
-Use `src/components/cta-link/index.tsx` for tracked internal CTAs and `src/components/tracked-external-link/index.tsx` for tracked external links. Keep event names stable unless analytics reporting is intentionally reset.
+Use `src/components/cta-link/index.tsx` for tracked internal CTAs and
+`src/components/tracked-external-link/index.tsx` for tracked external links.
+Keep event names stable unless analytics reporting is intentionally reset.
 
 ## Success And Error States
 
